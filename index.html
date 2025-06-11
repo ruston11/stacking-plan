@@ -38,45 +38,6 @@
 
 <div id="stackingPlan"></div>
 
-<script>
-  const suites = [
-    { floor: 3, suite: "A", type: "Office" },
-    { floor: 3, suite: "B", type: "Office" },
-    { floor: 2, suite: "A", type: "Lab" },
-    { floor: 2, suite: "B", type: "Lab" },
-    { floor: 2, suite: "C", type: "Retail" },
-    { floor: 1, suite: "A", type: "Lobby" }
-  ];
-
-  const planContainer = document.getElementById('stackingPlan');
-
-  const grouped = suites.reduce((acc, item) => {
-    acc[item.floor] = acc[item.floor] || [];
-    acc[item.floor].push(item);
-    return acc;
-  }, {});
-
-  const sortedFloors = Object.keys(grouped).sort((a, b) => b - a);
-
-  sortedFloors.forEach(floor => {
-    const label = document.createElement('div');
-    label.className = 'floor-label';
-    label.textContent = `Floor ${floor}`;
-    planContainer.appendChild(label);
-
-    const row = document.createElement('div');
-    row.className = 'floor';
-
-    grouped[floor].forEach(suite => {
-      const block = document.createElement('div');
-      block.className = 'suite';
-      block.textContent = `Suite ${suite.suite} (${suite.type})`;
-      row.appendChild(block);
-    });
-
-    planContainer.appendChild(row);
-  });
-</script>
 
  <script>
   // Example render function that takes suite data and builds the stacking plan
