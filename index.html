@@ -80,5 +80,16 @@
   });
 </script>
 
+<script>
+  window.addEventListener("message", (event) => {
+    console.log("📥 Received message in iframe:", event.data);
+    if (Array.isArray(event.data)) {
+      // Do something with the stacking data, e.g., render the stacking plan
+      window.stackingData = event.data;
+      // You can call a render function here
+    }
+  });
+</script>
+
 </body>
 </html>
