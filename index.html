@@ -39,19 +39,19 @@
 <div id="stackingPlan"></div>
 
 
- <script>
-  // Example render function that takes suite data and builds the stacking plan
+<script>
   function render(suites) {
     const container = document.getElementById('stackingPlan');
-    container.innerHTML = ''; // Clear previous content
+    container.innerHTML = '';
 
-    const grouped = suites.reduce((acc, item) => {
-      acc[item.floor_number] = acc[item.floor_number] || [];
-      acc[item.floor_number].push(item);
+    const grouped = suites.reduce((acc, suite) => {
+      acc[suite.floor_number] = acc[suite.floor_number] || [];
+      acc[suite.floor_number].push(suite);
       return acc;
     }, {});
 
     const sortedFloors = Object.keys(grouped).sort((a, b) => b - a);
+
     sortedFloors.forEach(floor => {
       const label = document.createElement('div');
       label.className = 'floor-label';
@@ -64,7 +64,7 @@
       grouped[floor].forEach(suite => {
         const block = document.createElement('div');
         block.className = 'suite';
-        block.textContent = `Suite ${suite.suite} (${suite.type})`;
+        block.textContent = `Suite ${suite.suite} (${suite.type}) – ${suite.suite_rsf} RSF`;
         row.appendChild(block);
       });
 
@@ -72,13 +72,17 @@
     });
   }
 
-  // 🔥 This listens for messages from Retool
+  // ✅ Listen for Retool data (must be array)
   window.addEventListener("message", (event) => {
     if (Array.isArray(event.data)) {
-      render(event.data); // <-- this triggers the UI update
+      console.log("📥 Received suite data in iframe:", event.data);
+      render(event.data);
+    } else {
+      console.log("⚠️ Ignored non-array message:", event.data);
     }
   });
 </script>
+
 
 <script>
   window.addEventListener("message", (event) => {
