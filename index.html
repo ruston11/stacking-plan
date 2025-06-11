@@ -78,5 +78,46 @@
   });
 </script>
 
+ <script>
+  // Example render function that takes suite data and builds the stacking plan
+  function render(suites) {
+    const container = document.getElementById('stackingPlan');
+    container.innerHTML = ''; // Clear previous content
+
+    const grouped = suites.reduce((acc, item) => {
+      acc[item.floor_number] = acc[item.floor_number] || [];
+      acc[item.floor_number].push(item);
+      return acc;
+    }, {});
+
+    const sortedFloors = Object.keys(grouped).sort((a, b) => b - a);
+    sortedFloors.forEach(floor => {
+      const label = document.createElement('div');
+      label.className = 'floor-label';
+      label.textContent = `Floor ${floor}`;
+      container.appendChild(label);
+
+      const row = document.createElement('div');
+      row.className = 'floor';
+
+      grouped[floor].forEach(suite => {
+        const block = document.createElement('div');
+        block.className = 'suite';
+        block.textContent = `Suite ${suite.suite} (${suite.type})`;
+        row.appendChild(block);
+      });
+
+      container.appendChild(row);
+    });
+  }
+
+  // 🔥 This listens for messages from Retool
+  window.addEventListener("message", (event) => {
+    if (Array.isArray(event.data)) {
+      render(event.data); // <-- this triggers the UI update
+    }
+  });
+</script>
+
 </body>
 </html>
