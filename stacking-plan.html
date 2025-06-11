@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stacking Plan Viewer</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; margin: 0; }
+    svg { border: 1px solid #ddd; display: block; margin: auto; }
+    .floor-label { font-size: 10px; fill: #333; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align: center;">Stacking Plan</h2>
+  <svg id="stackingPlan" width="400" height="600"></svg>
+
+  <script>
+    // Example floor data (replace with dynamic data later)
+    const floors = [
+      { floor_number: 1, rsf: 10000, color: '#4CAF50' },
+      { floor_number: 2, rsf: 15000, color: '#2196F3' },
+      { floor_number: 3, rsf: 12000, color: '#FFC107' },
+      { floor_number: 4, rsf: 9000,  color: '#F44336' },
+    ];
+
+    const svg = document.getElementById('stackingPlan');
+    const totalHeight = 600;
+    const floorHeight = totalHeight / floors.length;
+
+    floors.forEach((floor, index) => {
+      const y = totalHeight - (index + 1) * floorHeight;
+      const width = floor.rsf / 100; // scale RSF for demo
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', 0);
+      rect.setAttribute('y', y);
+      rect.setAttribute('width', width);
+      rect.setAttribute('height', floorHeight - 2); // small gap
+      rect.setAttribute('fill', floor.color);
+      svg.appendChild(rect);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', width + 5);
+      text.setAttribute('y', y + floorHeight / 2);
+      text.setAttribute('class', 'floor-label');
+      text.textContent = `Floor ${floor.floor_number}: ${floor.rsf} SF`;
+      svg.appendChild(text);
+    });
+  </script>
+</body>
+</html>
