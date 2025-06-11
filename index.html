@@ -38,7 +38,6 @@
 
 <div id="stackingPlan"></div>
 
-
 <script>
   function render(suites) {
     const container = document.getElementById('stackingPlan');
@@ -71,30 +70,18 @@
     });
   }
 
-  // ✅ Notify Retool that the iframe is ready to receive data
+  // ✅ Notify Retool that iframe is ready
   window.onload = () => {
     window.parent.postMessage({ type: 'readyForStackingData' }, '*');
   };
 
-  // ✅ Listen for data
-  window.addEventListener("message", (event) => {
-    if (Array.isArray(event.data)) {
-      console.log("📥 Received suite data in iframe:", event.data);
-      render(event.data);
-    } else {
-      console.log("⚠️ Ignored non-array message:", event.data);
-    }
-  });
-</script>
-
-
-<script>
+  // ✅ Listen for suite data from Retool
   window.addEventListener("message", (event) => {
     console.log("📥 Received message in iframe:", event.data);
     if (Array.isArray(event.data)) {
-      // Do something with the stacking data, e.g., render the stacking plan
-      window.stackingData = event.data;
-      // You can call a render function here
+      render(event.data);
+    } else {
+      console.log("⚠️ Ignored non-array message:", event.data);
     }
   });
 </script>
