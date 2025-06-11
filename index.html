@@ -1,68 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<title>Stacking Plan (Simple Table)</title>
-<style>
-  body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; }
-  .stacking-plan {
-    width: 400px; /* fixed width for stack diagram */
-    margin: 20px auto;
-    border: 1px solid #ccc;
-  }
-  .floor {
-    display: flex;
-    height: 30px; /* consistent height for each floor */
-    margin-bottom: 2px;
-    background: #eee;
-    position: relative;
-  }
-  .floor-rsf {
-    background: #4CAF50;
-    height: 100%;
-  }
-  .floor-label {
-    position: absolute;
-    left: 10px;
-    top: 5px;
-    font-size: 12px;
-    color: #333;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>Stacking Plan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .floor {
+      display: flex;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .suite {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border-right: 1px solid #ddd;
+      background: #e0e7ff;
+      font-size: 14px;
+    }
+    .suite:last-child {
+      border-right: none;
+    }
+    .floor-label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
 
-<h2 style="text-align: center;">Simple Stacking Plan</h2>
-
-<div class="stacking-plan" id="stackingPlan"></div>
+<div id="stackingPlan"></div>
 
 <script>
-  // Example floor data (replace with dynamic data later!)
-  const floors = [
-    { floor_number: 1, rsf: 8000 },
-    { floor_number: 2, rsf: 12000 },
-    { floor_number: 3, rsf: 10000 },
-    { floor_number: 4, rsf: 14000 },
+  const suites = [
+    { floor: 3, suite: "A", type: "Office" },
+    { floor: 3, suite: "B", type: "Office" },
+    { floor: 2, suite: "A", type: "Lab" },
+    { floor: 2, suite: "B", type: "Lab" },
+    { floor: 2, suite: "C", type: "Retail" },
+    { floor: 1, suite: "A", type: "Lobby" }
   ];
 
-  const maxRSF = Math.max(...floors.map(f => f.rsf));
-  const stackingPlan = document.getElementById('stackingPlan');
+  const planContainer = document.getElementById('stackingPlan');
 
-  floors.forEach(floor => {
-    const floorDiv = document.createElement('div');
-    floorDiv.className = 'floor';
+  const grouped = suites.reduce((acc, item) => {
+    acc[item.floor] = acc[item.floor] || [];
+    acc[item.floor].push(item);
+    return acc;
+  }, {});
 
-    const rsfDiv = document.createElement('div');
-    rsfDiv.className = 'floor-rsf';
-    rsfDiv.style.width = (floor.rsf / maxRSF * 100) + '%';
+  const sortedFloors = Object.keys(grouped).sort((a, b) => b - a);
 
+  sortedFloors.forEach(floor => {
     const label = document.createElement('div');
     label.className = 'floor-label';
-    label.textContent = `Floor ${floor.floor_number}: ${floor.rsf} SF`;
+    label.textContent = `Floor ${floor}`;
+    planContainer.appendChild(label);
 
-    floorDiv.appendChild(rsfDiv);
-    floorDiv.appendChild(label);
-    stackingPlan.appendChild(floorDiv);
+    const row = document.createElement('div');
+    row.className = 'floor';
+
+    grouped[floor].forEach(suite => {
+      const block = document.createElement('div');
+      block.className = 'suite';
+      block.textContent = `Suite ${suite.suite} (${suite.type})`;
+      row.appendChild(block);
+    });
+
+    planContainer.appendChild(row);
   });
 </script>
 
