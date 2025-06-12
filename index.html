@@ -2,31 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Stacking Plan Test</title>
+  <title>Stacking Plan Renderer</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; }
-    #output { white-space: pre-wrap; background: #f5f5f5; padding: 1rem; border-radius: 4px; }
+    #list { margin-top: 1rem; }
+    .suite-item {
+      padding: .5rem;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: .5rem;
+    }
   </style>
 </head>
 <body>
-  <h1>🔌 Stacking Plan Iframe Test</h1>
-  <p>Waiting for data from parent…</p>
-  <div id="output">No data received yet.</div>
+  <h1>🏢 Stacking Plan</h1>
+  <p id="status">Waiting for data…</p>
+  <div id="list"></div>
 
   <script>
-    // Listen for messages from the parent window
+    // container elements
+    const statusEl = document.getElementById('status');
+    const listEl   = document.getElementById('list');
+
+    // helper to render an array of suites
+    function renderSuites(suites) {
+      listEl.innerHTML = '';             // clear old
+      suites.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'suite-item';
+        div.innerHTML = `
+          <strong>Bldg:</strong> ${s.building_id} —
+          <strong>Fl:</strong> ${s.floor_number} —
+          <strong>Suite:</strong> ${s.suite} (${s.type}) —
+          <strong>RSF:</strong> ${s.suite_rsf}
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    // listen for your Retool postMessage
     window.addEventListener('message', event => {
-      // (Optional) validate origin: if (event.origin !== 'https://your-retool-app-domain') return;
-      const data = event.data;
-      console.log('✅ Received data from parent:', data);
+      // OPTIONAL: lock down to your Retool origin
+      // if (event.origin !== 'https://your-retool-app.retool.com') return;
 
-      // Display the raw JSON in the page
-      const outputEl = document.getElementById('output');
-      outputEl.innerText = JSON.stringify(data, null, 2);
+      const suites = event.data;
+      console.log('📬 got suites:', suites);
+      statusEl.innerText = `Received ${suites.length} records at ${new Date().toLocaleTimeString()}`;
 
-      // (Optional) send an acknowledgement back
+      renderSuites(suites);
+
+      // send acks back if you like
       event.source.postMessage(
-        { status: 'received', timestamp: Date.now() },
+        { type: 'ACK', count: suites.length },
         event.origin
       );
     }, false);
